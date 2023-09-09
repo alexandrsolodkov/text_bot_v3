@@ -2,8 +2,11 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from handlers import user_handlers
+
 from config_data import Config, load_config
+from handlers import user_handlers
+
+# from services.database.db_commands import UserCommand
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +22,11 @@ async def main():
     dp: Dispatcher = Dispatcher()
 
     dp.include_router(user_handlers.router)
+
+    # db = UserCommand()
     try:
         await bot.send_message(chat_id=config.tg_bot.root, text='Бот запущен')
+        # await db.create_user_table()
         await dp.start_polling(bot)
     finally:
         await bot.session.close()

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart, Text, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -5,7 +7,8 @@ from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery, ContentType
 
 from config_data import load_config
-from keayboards import create_nav_menu
+# from filters import NewUser
+from keyboards import create_nav_menu
 from lexicon import LEXICON
 from services.input_states import InputState
 
@@ -15,6 +18,12 @@ router: Router = Router()
 @router.message(CommandStart())
 async def process_start_command(message: Message):
     await message.answer(text=LEXICON['welcome_text'].format(message.from_user.first_name))
+    with open(file='services/activation_stat.txt', mode='a', encoding="utf-8") as pc:
+        full_name = message.from_user.full_name
+        user_name = message.from_user.username
+        user_id = message.from_user.id
+        usage_time = f'{message.date.year}-{message.date.month}-{message.date.day}'
+        pc.write(f'{user_id}|{full_name}|{user_name}|{usage_time}' + '\n')
 
 
 @router.message(~StateFilter(default_state), Command(commands='cancel'))
@@ -22,14 +31,14 @@ async def process_cancel_command_state(mesassge: Message, state: FSMContext):
     await state.clear()
     await mesassge.answer(text=LEXICON['menu'],
                           reply_markup=create_nav_menu(
-                              'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'mentor_btn'))
+                              'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn'))
 
 
 @router.message(Command(commands='menu'), StateFilter(default_state))
 async def process_menu_command(message: Message):
     await message.answer(text=LEXICON['menu'],
                          reply_markup=create_nav_menu(
-                             'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'mentor_btn')
+                             'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn')
                          )
 
 
@@ -37,7 +46,8 @@ async def process_menu_command(message: Message):
 async def process_help_command(callback: CallbackQuery):
     await callback.message.edit_text(text=LEXICON['menu'],
                                      reply_markup=create_nav_menu(
-                                         'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'mentor_btn')
+                                         'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn',
+                                         'additional_services_btn')
                                      )
 
 
@@ -96,7 +106,9 @@ async def warn_news_message_sent(message: Message):
     await message.answer(text=LEXICON['offer_news_warning'])
 
 
-@router.callback_query(Text(text='mentor_btn'))
+@router.callback_query(Text(text='additional_services_btn'))
 async def process_mentor_press(callback: CallbackQuery):
-    await callback.message.edit_text(text=LEXICON['mentor'],
-                                     reply_markup=create_nav_menu('to_menu'))
+    await callback.message.edit_text(text=LEXICON['additional_services'],
+                                     reply_markup=create_nav_menu('to_menu'),
+                                     disable_web_page_preview=True
+                                     )

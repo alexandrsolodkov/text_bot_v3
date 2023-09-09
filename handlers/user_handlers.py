@@ -69,7 +69,7 @@ async def process_offer_vacancy_press(callback: CallbackQuery, state: FSMContext
                 ~F.text.startswith('/'),
                 F.content_type == ContentType.TEXT)
 async def process_vacancy_message_sent(message: Message, state: FSMContext):
-    await message.send_copy(chat_id=load_config().tg_bot.root)
+    await message.send_copy(chat_id=load_config().tg_bot.admin)
     await message.answer(text=LEXICON['offer_vacancy_answer'],
                          reply_markup=create_nav_menu('to_menu'))
     await state.clear()
@@ -95,7 +95,7 @@ async def process_news_press(callback: CallbackQuery, state: FSMContext):
                 ~F.text.startswith('/'),
                 F.content_type.in_({'photo', 'video', 'text'}))
 async def process_news_message_sent(message: Message, state: FSMContext):
-    await message.send_copy(chat_id=load_config().tg_bot.root)
+    await message.send_copy(chat_id=load_config().tg_bot.admin)
     await message.answer(text=LEXICON['offer_news_answer'],
                          reply_markup=create_nav_menu('to_menu'))
     await state.clear()

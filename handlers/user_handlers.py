@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart, Text, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -8,7 +6,7 @@ from aiogram.types import Message, CallbackQuery, ContentType
 
 from config_data import load_config
 # from filters import NewUser
-from keyboards import create_nav_menu
+from keyboards import create_nav_menu, create_to_user_menu
 from lexicon import LEXICON
 from services.input_states import InputState
 
@@ -69,7 +67,11 @@ async def process_offer_vacancy_press(callback: CallbackQuery, state: FSMContext
                 ~F.text.startswith('/'),
                 F.content_type == ContentType.TEXT)
 async def process_vacancy_message_sent(message: Message, state: FSMContext):
-    await message.send_copy(chat_id=load_config().tg_bot.admin)
+    username = message.from_user.username
+    user_url = message.from_user.url
+    await message.copy_to(chat_id=load_config().tg_bot.admin,
+                          reply_markup=create_to_user_menu(text=username, url=user_url)
+                          )
     await message.answer(text=LEXICON['offer_vacancy_answer'],
                          reply_markup=create_nav_menu('to_menu'))
     await state.clear()
@@ -95,7 +97,11 @@ async def process_news_press(callback: CallbackQuery, state: FSMContext):
                 ~F.text.startswith('/'),
                 F.content_type.in_({'photo', 'video', 'text'}))
 async def process_news_message_sent(message: Message, state: FSMContext):
-    await message.send_copy(chat_id=load_config().tg_bot.admin)
+    username = message.from_user.username
+    user_url = message.from_user.url
+    await message.copy_to(chat_id=load_config().tg_bot.admin,
+                          reply_markup=create_to_user_menu(text=username, url=user_url)
+                          )
     await message.answer(text=LEXICON['offer_news_answer'],
                          reply_markup=create_nav_menu('to_menu'))
     await state.clear()

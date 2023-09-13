@@ -15,3 +15,10 @@ def create_nav_menu(*buttons, width: int = 1) -> InlineKeyboardMarkup:
         width=1
     )
     return kb_builder.as_markup()
+
+
+def create_to_user_menu(text: str, url: str) -> InlineKeyboardMarkup:
+    url_button = InlineKeyboardButton(text=text, url=url)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[[url_button]])
+
+    return keyboard

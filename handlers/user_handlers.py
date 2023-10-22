@@ -29,14 +29,14 @@ async def process_cancel_command_state(mesassge: Message, state: FSMContext):
     await state.clear()
     await mesassge.answer(text=LEXICON['menu'],
                           reply_markup=create_nav_menu(
-                              'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn'))
+                              'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn'))
 
 
 @router.message(Command(commands='menu'), StateFilter(default_state))
 async def process_menu_command(message: Message):
     await message.answer(text=LEXICON['menu'],
                          reply_markup=create_nav_menu(
-                             'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn')
+                             'offer_vacancy_btn', 'offer_news_btn', 'additional_services_btn')
                          )
 
 
@@ -44,17 +44,17 @@ async def process_menu_command(message: Message):
 async def process_help_command(callback: CallbackQuery):
     await callback.message.edit_text(text=LEXICON['menu'],
                                      reply_markup=create_nav_menu(
-                                         'buy_advertising_btn', 'offer_vacancy_btn', 'offer_news_btn',
+                                         'offer_vacancy_btn', 'offer_news_btn',
                                          'additional_services_btn')
                                      )
 
 
-@router.callback_query(Text(text='buy_advertising_btn'))
-async def process_advertising_press(callback: CallbackQuery):
-    await callback.message.edit_text(text=LEXICON['buy_advertising'],
-                                     reply_markup=create_nav_menu('to_menu'),
-                                     disable_web_page_preview=True
-                                     )
+# @router.callback_query(Text(text='buy_advertising_btn'))
+# async def process_advertising_press(callback: CallbackQuery):
+#     await callback.message.edit_text(text=LEXICON['buy_advertising'],
+#                                      reply_markup=create_nav_menu('to_menu'),
+#                                      disable_web_page_preview=True
+#                                      )
 
 
 @router.callback_query(Text(text='offer_vacancy_btn'))

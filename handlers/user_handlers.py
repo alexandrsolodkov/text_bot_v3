@@ -8,20 +8,32 @@ from config_data import load_config
 # from filters import NewUser
 from keyboards import create_nav_menu, create_to_user_menu
 from lexicon import LEXICON
+from services.db_api.db_command import add_user, exists_user
 from services.input_states import InputState
 
 router: Router = Router()
 
 
+# @router.message(CommandStart())
+# async def process_start_command(message: Message):
+#     await message.answer(text=LEXICON['welcome_text'].format(message.from_user.first_name))
+#     with open(file='services/activation_stat.txt', mode='a', encoding="utf-8") as pc:
+#         full_name = message.from_user.full_name
+#         user_name = message.from_user.username
+#         user_id = message.from_user.id
+#         usage_time = f'{message.date.year}-{message.date.month}-{message.date.day}'
+#         pc.write(f'{user_id}|{full_name}|{user_name}|{usage_time}' + '\n')
+
+
 @router.message(CommandStart())
 async def process_start_command(message: Message):
     await message.answer(text=LEXICON['welcome_text'].format(message.from_user.first_name))
-    with open(file='services/activation_stat.txt', mode='a', encoding="utf-8") as pc:
-        full_name = message.from_user.full_name
-        user_name = message.from_user.username
-        user_id = message.from_user.id
-        usage_time = f'{message.date.year}-{message.date.month}-{message.date.day}'
-        pc.write(f'{user_id}|{full_name}|{user_name}|{usage_time}' + '\n')
+    if not exists_user(message.from_user.id):
+        add_user(
+            tg_id=message.from_user.id,
+            full_name=message.from_user.full_name,
+            user_name=message.from_user.username
+        )
 
 
 @router.message(~StateFilter(default_state), Command(commands='cancel'))
